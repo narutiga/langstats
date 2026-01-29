@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Events, REST, Routes } from 'discord.js';
+import { Client, GatewayIntentBits, Events, REST, Routes, ActivityType } from 'discord.js';
 import { config } from './config.js';
 import { upsertGuild, deleteGuild } from './db/queries.js';
 import * as setupCommand from './commands/setup.js';
@@ -10,6 +10,15 @@ export const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
   ],
+  presence: {
+    status: 'online',
+    activities: [
+      {
+        name: 'server growth',
+        type: ActivityType.Watching,
+      },
+    ],
+  },
 });
 
 async function registerCommands(guildId: string): Promise<void> {
