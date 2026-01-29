@@ -49,19 +49,26 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     await updateReportChannel(guild.id, channel.id);
 
+    await channel.send({
+      content: `This channel has been set up for weekly growth reports. The first report will be posted next Monday.`,
+    });
+
     await interaction.reply({
       content: `Weekly reports will be posted to ${channel}.`,
       ephemeral: true,
     });
-
-    await channel.send({
-      content: `This channel has been set up for weekly growth reports. The first report will be posted next Monday.`,
-    });
   } catch (error) {
     console.error('Failed to setup report channel:', error);
-    await interaction.reply({
+
+    const errorMessage = {
       content: 'Failed to save settings. Please try again.',
       ephemeral: true,
-    });
+    };
+
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp(errorMessage);
+    } else {
+      await interaction.reply(errorMessage);
+    }
   }
 }
