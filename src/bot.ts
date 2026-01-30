@@ -57,7 +57,12 @@ client.on(Events.GuildCreate, async (guild) => {
     });
     console.log(`Registered guild: ${guild.name}`);
 
-    await registerCommands(guild.id);
+    // Only register commands for truly new guilds (after bot is ready)
+    // During startup, GuildCreate fires for cached guilds before ClientReady,
+    // and ClientReady handles command registration for all existing guilds
+    if (client.isReady()) {
+      await registerCommands(guild.id);
+    }
   } catch (error) {
     console.error(`Failed to register guild ${guild.name}:`, error);
   }
