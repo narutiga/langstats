@@ -25,7 +25,8 @@ export async function generateWeeklyReportData(
   }
 
   const current = dailyStats[0];
-  const previous = dailyStats[1];
+  // Handle case where there's only 1 data point (new guild's first week)
+  const previous = dailyStats.length >= 2 ? dailyStats[1] : null;
 
   const currentMembers = current.memberCount ?? 0;
   const previousMembers = previous?.memberCount ?? currentMembers;
