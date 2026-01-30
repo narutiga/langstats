@@ -40,6 +40,9 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     return;
   }
 
+  // Defer reply immediately to avoid 3-second timeout
+  await interaction.deferReply({ ephemeral: true });
+
   try {
     // Send confirmation message first to verify bot has permission
     await channel.send({
@@ -55,22 +58,14 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     await updateReportChannel(guild.id, channel.id);
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `Weekly reports will be posted to ${channel}.`,
-      ephemeral: true,
     });
   } catch (error) {
     console.error('Failed to setup report channel:', error);
 
-    const errorMessage = {
+    await interaction.editReply({
       content: 'Failed to save settings. Please try again.',
-      ephemeral: true,
-    };
-
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp(errorMessage);
-    } else {
-      await interaction.reply(errorMessage);
-    }
+    });
   }
 }
