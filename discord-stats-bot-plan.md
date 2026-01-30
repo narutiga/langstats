@@ -27,6 +27,8 @@
 
 ## 収益モデル
 
+※ 価格は検証フェーズのため暫定
+
 | プラン | 価格 | 内容 |
 |--------|------|------|
 | Free | $0 | 7日間データ、基本統計、週1レポート |
@@ -89,7 +91,7 @@
 ### Phase 4: 高度分析（将来）
 
 - [ ] 言語成長スコア
-- [ ] **Engagement Score** - 学習コミュニティの健康度を数値化（例: "Server health: 78/100 - Learners are more active this week."）**← 競合差別化ポイント**
+- [ ] **Engagement Score** - 学習コミュニティの健康度を数値化（例: "Server health: 78/100 - Learners are more active this week."）**← 競合差別化ポイント・将来的なコア機能候補**
 - [ ] Mentor Contribution Score
 - [ ] VC最適時間提案
 - [ ] 自動インサイト生成
@@ -214,7 +216,7 @@ CREATE TABLE users (
 | サービス | Phase 1 | Phase 2以降 |
 |---------|---------|-------------|
 | Railway | $0 | $5/月（常時起動） |
-| Supabase | $0 | $0〜$25/月 |
+| Turso | $0 | $0〜$25/月 |
 | Vercel | - | $0 |
 | ドメイン | - | ~$12/年 |
 | **合計** | **$0** | **$5〜30/月** |
@@ -227,7 +229,7 @@ CREATE TABLE users (
    - サーバー参加/退出時の処理
 
 2. **データベースセットアップ**
-   - Supabaseプロジェクト作成
+   - Tursoプロジェクト作成
    - guilds, daily_stats テーブル作成
 
 3. **統計収集機能**
@@ -270,10 +272,11 @@ CREATE TABLE users (
 | Phase 1 | 10サーバー導入、「有料でも使いたい」3件、リアクション率 20%以上、**定性フィードバック獲得** |
 | Phase 2 | 50サーバー導入、WAU 30% |
 | Phase 3 | 有料転換率 5%、MRR $100 |
+| 撤退判断 | Phase 1で3ヶ月以内に10サーバー未達の場合、スコープを再検討 |
 
 ## 次のアクション
 
 1. ~~サービス名を決める~~ → **LangStats**（仮）
 2. Discord Developer Portalでアプリ作成
-3. Supabaseプロジェクト作成
+3. Tursoプロジェクト作成
 4. Phase 1 Bot基盤のコーディング開始
