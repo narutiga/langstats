@@ -11,7 +11,7 @@ function requireEnv(name: string): string {
 export const config = {
   discord: {
     token: requireEnv('DISCORD_TOKEN'),
-    clientId: requireEnv('DISCORD_CLIENT_ID'),
+    clientId: process.env.DISCORD_CLIENT_ID, // Optional: only required for bot command registration
   },
   turso: {
     url: requireEnv('TURSO_DATABASE_URL'),

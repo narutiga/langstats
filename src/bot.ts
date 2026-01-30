@@ -2,8 +2,9 @@ import { Client, GatewayIntentBits, Events, REST, Routes, ActivityType } from 'd
 import { config } from './config.js';
 import { upsertGuild, deleteGuild } from './db/queries.js';
 import * as setupCommand from './commands/setup.js';
+import * as previewCommand from './commands/preview.js';
 
-const commands = [setupCommand];
+const commands = [setupCommand, previewCommand];
 
 export const client = new Client({
   intents: [
@@ -22,6 +23,10 @@ export const client = new Client({
 });
 
 async function registerCommands(guildId: string): Promise<void> {
+  if (!config.discord.clientId) {
+    throw new Error('DISCORD_CLIENT_ID is required for command registration');
+  }
+
   const rest = new REST().setToken(config.discord.token);
 
   try {
@@ -98,10 +103,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
       ephemeral: true,
     };
 
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp(reply);
-    } else {
-      await interaction.reply(reply);
+    try {
+      if (interaction.replied || interaction.deferred) {
+        await interaction.followUp(reply);
+      } else {
+        await interaction.reply(reply);
+      }
+    } catch (replyError) {
+      console.error('Failed to send error response:', replyError);
     }
   }
 });
