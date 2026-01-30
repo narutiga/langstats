@@ -23,6 +23,10 @@ export const client = new Client({
 });
 
 async function registerCommands(guildId: string): Promise<void> {
+  if (!config.discord.clientId) {
+    throw new Error('DISCORD_CLIENT_ID is required for command registration');
+  }
+
   const rest = new REST().setToken(config.discord.token);
 
   try {
