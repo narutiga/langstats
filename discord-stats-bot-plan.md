@@ -43,7 +43,7 @@
 - [x] 週1回、Discordチャンネルにレポート投稿
 - [x] `/setup` コマンドでレポート投稿先チャンネルを設定（管理者権限必須）
 - [x] Bot参加時にウェルカムメッセージを投稿（オンボーディング）
-- [ ] `/preview` コマンドで現時点のレポートをプレビュー表示
+- [x] `/preview` コマンドで現時点のレポートをプレビュー表示
 
 ```
 📊 Weekly Server Report - Language Exchange Hub
