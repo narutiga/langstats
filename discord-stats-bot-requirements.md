@@ -4,9 +4,9 @@
 
 | 項目 | 内容 |
 |------|------|
-| 文書バージョン | 2.2 |
+| 文書バージョン | 2.5 |
 | 作成日 | 2026-01-29 |
-| 最終更新 | 2026-01-29 |
+| 最終更新 | 2026-01-30 |
 | ステータス | ドラフト |
 
 ---
@@ -44,7 +44,7 @@
 |--------|------|------|
 | Free | $0 | 試用・小規模サーバー |
 | Pro | $3 | 本格運用したい管理者 |
-| Community | $7 | 複数サーバー運営者 "For multi-server language community leaders" |
+| Community | $7 | "Built for leaders growing multiple global language communities" |
 
 ### 2.3 プラン別機能比較
 
@@ -64,7 +64,7 @@
 
 | フェーズ | 指標 |
 |---------|------|
-| Phase 1 | 10サーバー導入、「有料でも使いたい」3件、レポートへのリアクション率 20%以上 |
+| Phase 1 | 10サーバー導入、「有料でも使いたい」3件、リアクション率 20%以上、**定性フィードバック獲得**（例: 「次のレポートが楽しみ」） |
 | Phase 2 | 50サーバー導入、WAU 30% |
 | Phase 3 | 有料転換率 5%、MRR $100 |
 
@@ -80,10 +80,25 @@
 
 | ID | 機能 | 優先度 | 説明 |
 |----|------|:------:|------|
-| BOT-001 | サーバー参加検知 | 必須 | Botがサーバーに追加された際の初期設定処理 |
+| BOT-001 | サーバー参加検知 | 必須 | Botがサーバーに追加された際の初期設定処理。ウェルカムメッセージを投稿 |
 | BOT-002 | メンバー数取得 | 必須 | 日次でサーバーのメンバー数を取得・記録 |
-| BOT-003 | ロール別統計 | 必須 | 言語ロールのメンバー数を記録。対象: ロール名に "english", "japanese", "learner", "native", "学習" を含むもの（将来カスタム可能） |
+| BOT-003 | ロール別統計 | 必須 | 言語ロールのメンバー数を記録。対象: ロール名に "english", "japanese", "learner", "native", "学習" を含むもの。**将来改善**: `/config roles` で手動追加、自動検出 + オーバーライド |
 | BOT-004 | 週次レポート投稿 | 必須 | 毎週月曜にDiscordチャンネルへレポート投稿 |
+| BOT-005 | /setup コマンド | 必須 | レポート投稿先チャンネルを設定。管理者権限必須 |
+| BOT-006 | /preview コマンド | 高 | 現時点の統計でレポートをプレビュー表示（投稿はしない） |
+
+#### ウェルカムメッセージ形式
+
+Bot参加時に、システムチャンネルまたはオーナーへDMで投稿:
+
+```
+✨ Thanks for adding LangStats!
+
+Use /setup to choose where weekly reports will be posted.
+Your first report arrives next Monday 📊
+
+Need help? https://langstats.app/docs
+```
 
 #### 週次レポート形式
 
@@ -99,6 +114,8 @@
    Japanese Learners: 89 (+3)
    Spanish Learners: 45 (+1)
 
+💡 Insight: Learner roles grew faster than native roles this week.
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💬 Found this useful? React with 👍
    Want advanced stats? Reply "PRO"
@@ -107,6 +124,8 @@
 ### 3.2 Phase 2: Webダッシュボード
 
 **条件**: Phase 1で価値が検証できたら
+
+**スコープ注意**: 初回リリースはグラフ表示 + 期間選択のみ。機能は段階的に追加し、「重い管理画面」化を避ける。
 
 | ID | 機能 | 優先度 | 説明 |
 |----|------|:------:|------|
@@ -136,7 +155,7 @@
 | ADV-001 | メッセージ数統計 | チャンネル毎のメッセージ数を集計 |
 | ADV-002 | アクティブユーザー | 一定期間内に発言したユーザー数 |
 | ADV-003 | 言語成長スコア | 学習者の投稿言語比率の変化 |
-| ADV-004 | Engagement Score | 学習コミュニティの健康度指標 |
+| ADV-004 | Engagement Score | 学習コミュニティの健康度を数値化。例: "Server health: 78/100 - Learners are more active this week." **競合差別化ポイント** |
 | ADV-005 | VC最適時間提案 | 国際ユーザー向け最適時間の提案 |
 
 ---
@@ -392,7 +411,44 @@
 
 ---
 
-## 11. 改訂履歴
+## 11. ブランドボイス
+
+### 11.1 Bot のキャラクター
+
+| 項目 | 内容 |
+|------|------|
+| 名前 | LangStats |
+| キャッチコピー | Watching your server grow, one stat at a time ✨ |
+| 性格 | 優しくてちょっとおっとりな分析アシスタント |
+| トーン | フレンドリー・静か・かわいい |
+
+### 11.2 自己紹介文（Discord Developer Portal）
+
+```
+📊 I watch your server grow, one stat at a time ✨
+Friendly, lightweight, and made for language communities.
+
+Use /setup to start receiving weekly reports!
+```
+
+### 11.3 メッセージスタイルガイド
+
+| 場面 | スタイル | 例 |
+|------|---------|-----|
+| 週次レポート | 絵文字控えめ、データ中心、最後に軽いCTA | 「📊 Weekly Growth Report」 |
+| 設定完了 | 短く、ポジティブ | 「Weekly reports will be posted to #channel.」 |
+| エラー | 丁寧、解決策を提示 | 「Failed to save settings. Please try again.」 |
+| 確認メッセージ | フレンドリー、期待感 | 「The first report will be posted next Monday.」 |
+
+### 11.4 絵文字の使い方
+
+- **使う**: 📊 👥 📈 🏷️ ✨ 💬 👍
+- **使わない**: 過度な装飾、複数連続、文中への乱用
+- **原則**: 見出しや区切りに1つ、本文には基本使わない
+
+---
+
+## 12. 改訂履歴
 
 | バージョン | 日付 | 内容 |
 |------------|------|------|
@@ -400,3 +456,6 @@
 | 2.0 | 2026-01-29 | フェーズ構成を見直し。Phase 1を超軽量MVPに変更。3段階価格プラン導入。ロール別統計を追加。 |
 | 2.1 | 2026-01-29 | Phase 1 KPIに行動指標追加。週次レポートにCTA追加。ロール検出仕様を明文化。Communityプランにタグライン追加。 |
 | 2.2 | 2026-01-29 | パッケージマネージャをpnpmに変更。SchedulerをGitHub Actionsに変更。 |
+| 2.3 | 2026-01-29 | ブランドボイス（Bot キャラクター、メッセージスタイルガイド）を追加。 |
+| 2.4 | 2026-01-30 | Phase 1に/setup, /previewコマンド追加。成功指標に定性指標追加。ロール検出の将来改善を明記。Phase 2スコープ注意を追加。ADV-004説明拡充。 |
+| 2.5 | 2026-01-30 | ウェルカムメッセージ追加。週次レポートにInsight行追加。Communityプランのタグライン強化。 |

@@ -30,8 +30,8 @@
 | プラン | 価格 | 内容 |
 |--------|------|------|
 | Free | $0 | 7日間データ、基本統計、週1レポート |
-| Pro | $3/月 | 90日データ、CSV出力、言語分析 |
-| Server+ | $7/月 | 複数サーバー、高度分析、優先サポート |
+| Pro | $3/月 | 90日データ、Webダッシュボード、CSV出力 |
+| Community | $7/月 | "Built for leaders growing multiple global language communities" |
 
 ## フェーズ別ロードマップ
 
@@ -39,9 +39,11 @@
 
 **目標**: Webなし・課金なしで「欲しい」を確認する
 
-- [ ] Botでメンバー数を1日1回記録
-- [ ] 週1回、Discordチャンネルにレポート投稿
-- [ ] `/stats` コマンドで直近データ表示
+- [x] Botでメンバー数を1日1回記録
+- [x] 週1回、Discordチャンネルにレポート投稿
+- [x] `/setup` コマンドでレポート投稿先チャンネルを設定（管理者権限必須）
+- [x] Bot参加時にウェルカムメッセージを投稿（オンボーディング）
+- [ ] `/preview` コマンドで現時点のレポートをプレビュー表示
 
 ```
 📊 Weekly Server Report - Language Exchange Hub
@@ -52,16 +54,22 @@
 🏆 Top language role: English Learners (156)
 📈 Growth rate: +2.5%
 
+💡 Insight: Learner roles grew faster than native roles this week.
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 **検証指標**:
 - 10サーバー以上が継続利用
 - 「有料でも使いたい」の声を3件以上獲得
+- レポートへのリアクション率 20%以上
+- **定性フィードバック獲得**（例: 「次のレポートが楽しみ」）
 
 ### Phase 2: Webダッシュボード
 
 **条件**: Phase 1で価値が検証できたら
+
+**スコープ注意**: 初回リリースはグラフ表示 + 期間選択のみ。機能は段階的に追加し、「重い管理画面」化を避ける。
 
 - [ ] Next.js Webダッシュボード
 - [ ] Discord OAuth ログイン
@@ -75,13 +83,13 @@
 
 - [ ] Stripe決済連携
 - [ ] サブスクリプション管理
-- [ ] Pro/Server+機能の実装
+- [ ] Pro/Community機能の実装
 - [ ] CSVエクスポート
 
 ### Phase 4: 高度分析（将来）
 
 - [ ] 言語成長スコア
-- [ ] Learner Engagement Score
+- [ ] **Engagement Score** - 学習コミュニティの健康度を数値化（例: "Server health: 78/100 - Learners are more active this week."）**← 競合差別化ポイント**
 - [ ] Mentor Contribution Score
 - [ ] VC最適時間提案
 - [ ] 自動インサイト生成
@@ -92,22 +100,28 @@
 
 ```
 ┌─────────────────┐     ┌─────────────────┐
-│  Discord Bot    │────▶│   Supabase      │
-│  (Railway)      │     │   (PostgreSQL)  │
+│  Discord Bot    │────▶│     Turso       │
+│  (Railway)      │     │    (SQLite)     │
 └─────────────────┘     └─────────────────┘
+         ▲
+         │ cron trigger
+┌─────────────────┐
+│ GitHub Actions  │
+│  (Scheduler)    │
+└─────────────────┘
 ```
 
 ### Phase 2以降（フル構成）
 
 ```
 ┌─────────────────┐     ┌─────────────────┐
-│  Discord Bot    │────▶│   Supabase      │
-│  (Railway)      │     │   (PostgreSQL)  │
+│  Discord Bot    │────▶│     Turso       │
+│  (Railway)      │     │    (SQLite)     │
 └─────────────────┘     └────────┬────────┘
                                  │
 ┌─────────────────┐              │
 │  Web Dashboard  │◀─────────────┘
-│  (Next.js/Vercel)│
+│ (Next.js/Vercel)│
 └─────────────────┘
         │
 ┌───────▼─────────┐
@@ -120,11 +134,14 @@
 
 | コンポーネント | 技術 | 理由 |
 |---------------|------|------|
-| Bot | Node.js + discord.js | エコシステム充実 |
-| Botホスティング | Railway | 無料枠あり |
-| データベース | Supabase (PostgreSQL) | 無料枠大、認証機能付き |
-| Webフロント | Next.js | React + API Routes一体化 |
-| Webホスティング | Vercel | 無料枠、デプロイ簡単 |
+| Bot | Node.js 20 + discord.js | エコシステム充実 |
+| パッケージマネージャ | pnpm | 高速、ディスク効率、厳密な依存管理 |
+| Botホスティング | Railway | 無料枠あり、常時起動対応 |
+| データベース | Turso (SQLite) | 軽量、無料枠大、Edge対応 |
+| ORM | Drizzle ORM | Turso公式推奨、型安全 |
+| スケジューラ | GitHub Actions | 外部cron、Botスリープでも安定 |
+| Webフロント | Next.js 14 (App Router) | React + API Routes一体化 |
+| Webホスティング | Vercel | 無料枠、自動デプロイ |
 | 決済 | Stripe | サブスク管理が簡単 |
 | グラフ描画 | Recharts | 軽量で十分 |
 
@@ -142,7 +159,7 @@ CREATE TABLE guilds (
   id TEXT PRIMARY KEY,          -- Discord Guild ID
   name TEXT,
   owner_id TEXT,
-  plan TEXT DEFAULT 'free',     -- 'free' | 'pro' | 'server_plus'
+  plan TEXT DEFAULT 'free',     -- 'free' | 'pro' | 'community'
   stripe_customer_id TEXT,
   created_at TIMESTAMP DEFAULT NOW()
 );
@@ -250,7 +267,7 @@ CREATE TABLE users (
 
 | フェーズ | 指標 |
 |---------|------|
-| Phase 1 | 10サーバー導入、「有料でも使いたい」3件 |
+| Phase 1 | 10サーバー導入、「有料でも使いたい」3件、リアクション率 20%以上、**定性フィードバック獲得** |
 | Phase 2 | 50サーバー導入、WAU 30% |
 | Phase 3 | 有料転換率 5%、MRR $100 |
 

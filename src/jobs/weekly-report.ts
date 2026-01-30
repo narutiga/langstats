@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Events, TextChannel } from 'discord.js';
+import { Client, GatewayIntentBits, Events, TextChannel, NewsChannel } from 'discord.js';
 import { config } from '../config.js';
 import { getGuild } from '../db/queries.js';
 import { generateWeeklyReportData, formatWeeklyReport } from '../services/report.js';
@@ -36,8 +36,8 @@ async function runWeeklyReport(): Promise<void> {
 
       const channel = await guild.channels.fetch(guildData.reportChannelId);
 
-      if (!channel || !(channel instanceof TextChannel)) {
-        console.log(`  Skipping: Report channel not found or not a text channel`);
+      if (!channel || (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel))) {
+        console.log(`  Skipping: Report channel not found or not a valid channel type`);
         skipCount++;
         continue;
       }
