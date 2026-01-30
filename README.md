@@ -64,8 +64,7 @@ Built for language exchange communities, but works for any Discord server.
 
 1. **Add the bot to your server**
 
-   <!-- TODO: Replace with production invite link -->
-   *(Invite link coming soon)*
+   [Add LangStats to Discord](https://discord.com/oauth2/authorize?client_id=1466321163792945183&permissions=68608&integration_type=0&scope=bot+applications.commands)
 
 2. **Set the report channel**
 
