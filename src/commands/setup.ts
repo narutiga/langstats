@@ -41,6 +41,12 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   }
 
   try {
+    // Send confirmation message first to verify bot has permission
+    await channel.send({
+      content: `This channel has been set up for weekly growth reports. The first report will be posted next Monday.`,
+    });
+
+    // Only save to DB after successful send
     await upsertGuild({
       id: guild.id,
       name: guild.name,
@@ -48,10 +54,6 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     });
 
     await updateReportChannel(guild.id, channel.id);
-
-    await channel.send({
-      content: `This channel has been set up for weekly growth reports. The first report will be posted next Monday.`,
-    });
 
     await interaction.reply({
       content: `Weekly reports will be posted to ${channel}.`,
