@@ -53,7 +53,14 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     await interaction.deferReply({ ephemeral: true });
   } catch (error) {
     console.error('Failed to defer setup reply:', error);
-    await respond('Failed to start setup. Please try again.');
+
+    // Wrap respond() in its own try/catch for full resilience
+    try {
+      await respond('Failed to start setup. Please try again.');
+    } catch (respondError) {
+      console.error('Failed to respond after defer failure:', respondError);
+      // Can't do anything more - interaction is likely dead
+    }
     return;
   }
 
