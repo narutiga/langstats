@@ -104,7 +104,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
     };
 
     try {
-      if (interaction.replied || interaction.deferred) {
+      if (interaction.deferred) {
+        await interaction.editReply(reply);
+      } else if (interaction.replied) {
         await interaction.followUp(reply);
       } else {
         await interaction.reply(reply);
