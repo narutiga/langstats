@@ -41,7 +41,16 @@ export interface RoleStatData {
 }
 
 export async function collectGuildStats(guild: Guild): Promise<GuildStats> {
-  await guild.members.fetch();
+  // Try to fetch all members, but continue with cached data if it fails
+  try {
+    await guild.members.fetch();
+  } catch (error) {
+    console.warn(
+      `Failed to fetch all members for guild ${guild.name} (${guild.id}). ` +
+      `Using cached member data. Error: ${error instanceof Error ? error.message : String(error)}`
+    );
+    // Continue with cached members instead of throwing
+  }
 
   const languageRoles = guild.roles.cache.filter((role) =>
     isLanguageRole(role.name) && role.members.size > 0
