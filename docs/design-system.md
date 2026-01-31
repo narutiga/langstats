@@ -59,6 +59,12 @@ Phase 2 Web / Bot / LP まで共通で使うことを想定しています。
 --orange-400: #fb923c; /* 警告 */
 ```
 
+#### Usage Rules
+
+- Error / Warning は「変化」や「注意」にのみ使用
+- 通常の数値表示では使用しない
+- 赤は連続使用しない（1画面1箇所まで）
+
 ### Neutral
 
 ```css
@@ -148,6 +154,8 @@ Phase 2 Web / Bot / LP まで共通で使うことを想定しています。
 
 #### Primary
 
+主要CTA（Invite / Upgrade）
+
 ```css
 background: var(--blue-400);
 color: white;
@@ -163,6 +171,8 @@ font-weight: 500;
 
 #### Secondary
 
+主要操作の代替（Filter / Switch）
+
 ```css
 background: transparent;
 color: var(--blue-400);
@@ -171,7 +181,9 @@ padding: 12px 24px;
 border-radius: 8px;
 ```
 
-#### Outline
+#### Ghost
+
+補助操作（Cancel / Back）
 
 ```css
 background: transparent;
@@ -210,6 +222,11 @@ font-weight: 500;
 - Success: `--green-100` / `--green-600`
 - Warning: `--orange-100` / `--orange-600`
 - Error: `--red-100` / `--red-600`
+
+#### Usage Rules
+
+- **Badge**: 状態・属性・短いラベル（例: "New", "Premium", "+5"）
+- **Alert**: 行動を促すメッセージ・注意喚起（例: "設定が保存されました"）
 
 ### Alert
 
@@ -375,4 +392,5 @@ module.exports = {
 
 ## 更新履歴
 
+- **v0.2** (2026-01-31): Button 命名整理（Outline → Ghost）、Status Color 使用ルール追加、Alert/Badge 使い分け明文化
 - **v0.1** (2026-01-31): 初版リリース
