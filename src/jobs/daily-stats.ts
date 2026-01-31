@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Events } from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 import { config } from '../config.js';
 import {
   getAllGuilds,
@@ -7,6 +7,7 @@ import {
   insertRoleStats,
 } from '../db/queries.js';
 import { collectGuildStats } from '../services/stats.js';
+import { loginWithTimeout } from '../utils/discord.js';
 
 async function runDailyStats(): Promise<number> {
   console.log('Starting daily stats collection...');
@@ -20,11 +21,7 @@ async function runDailyStats(): Promise<number> {
   let errorCount = 0;
 
   try {
-    await new Promise<void>((resolve, reject) => {
-      client.once(Events.ClientReady, () => resolve());
-      client.once(Events.Error, reject);
-      client.login(config.discord.token);
-    });
+    await loginWithTimeout(client, config.discord.token);
 
     console.log(`Connected as ${client.user?.tag}`);
 
