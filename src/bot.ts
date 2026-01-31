@@ -23,8 +23,9 @@ export const client = new Client({
 });
 
 async function registerCommands(guildId: string): Promise<void> {
+  // Defensive check - should not be reached due to guards in event handlers
   if (!config.discord.clientId) {
-    throw new Error('DISCORD_CLIENT_ID is required for command registration');
+    return;
   }
 
   const rest = new REST().setToken(config.discord.token);
@@ -47,6 +48,14 @@ client.once(Events.ClientReady, async (readyClient) => {
   console.log(`Logged in as ${readyClient.user.tag}`);
   console.log(`Serving ${readyClient.guilds.cache.size} guilds`);
 
+  // Check once before the loop to avoid spamming logs in multi-guild deployments
+  if (!config.discord.clientId) {
+    console.warn(
+      'DISCORD_CLIENT_ID is not set. Skipping command registration for all guilds.'
+    );
+    return;
+  }
+
   for (const guild of readyClient.guilds.cache.values()) {
     await registerCommands(guild.id);
   }
@@ -65,7 +74,7 @@ client.on(Events.GuildCreate, async (guild) => {
     // Only register commands for truly new guilds (after bot is ready)
     // During startup, GuildCreate fires for cached guilds before ClientReady,
     // and ClientReady handles command registration for all existing guilds
-    if (client.isReady()) {
+    if (client.isReady() && config.discord.clientId) {
       await registerCommands(guild.id);
     }
   } catch (error) {
