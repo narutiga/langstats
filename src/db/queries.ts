@@ -27,9 +27,11 @@ export async function updateReportChannel(
 }
 
 export async function deleteGuild(guildId: string): Promise<void> {
-  await db.delete(roleStats).where(eq(roleStats.guildId, guildId));
-  await db.delete(dailyStats).where(eq(dailyStats.guildId, guildId));
-  await db.delete(guilds).where(eq(guilds.id, guildId));
+  await db.transaction(async (tx) => {
+    await tx.delete(roleStats).where(eq(roleStats.guildId, guildId));
+    await tx.delete(dailyStats).where(eq(dailyStats.guildId, guildId));
+    await tx.delete(guilds).where(eq(guilds.id, guildId));
+  });
 }
 
 export async function getAllGuilds() {
