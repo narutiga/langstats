@@ -1,7 +1,8 @@
-import { Client, GatewayIntentBits, Events, TextChannel, NewsChannel } from 'discord.js';
+import { Client, GatewayIntentBits, TextChannel, NewsChannel } from 'discord.js';
 import { config } from '../config.js';
 import { getGuild } from '../db/queries.js';
 import { generateWeeklyReportData, formatWeeklyReport } from '../services/report.js';
+import { loginWithTimeout } from '../utils/discord.js';
 
 async function runWeeklyReport(): Promise<void> {
   console.log('Starting weekly report generation...');
@@ -10,11 +11,7 @@ async function runWeeklyReport(): Promise<void> {
     intents: [GatewayIntentBits.Guilds],
   });
 
-  await new Promise<void>((resolve, reject) => {
-    client.once(Events.ClientReady, () => resolve());
-    client.once(Events.Error, reject);
-    client.login(config.discord.token);
-  });
+  await loginWithTimeout(client, config.discord.token);
 
   console.log(`Connected as ${client.user?.tag}`);
 
