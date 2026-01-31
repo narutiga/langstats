@@ -22,6 +22,14 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   const channel = interaction.options.getChannel('channel', true);
+  const respond = async (content: string): Promise<void> => {
+    if (interaction.deferred || interaction.replied) {
+      await interaction.editReply({ content });
+      return;
+    }
+
+    await interaction.reply({ content, ephemeral: true });
+  };
 
   if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel)) {
     await interaction.reply({
@@ -41,7 +49,20 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   }
 
   // Defer reply immediately to avoid 3-second timeout
-  await interaction.deferReply({ ephemeral: true });
+  try {
+    await interaction.deferReply({ ephemeral: true });
+  } catch (error) {
+    console.error('Failed to defer setup reply:', error);
+
+    // Wrap respond() in its own try/catch for full resilience
+    try {
+      await respond('Failed to start setup. Please try again.');
+    } catch (respondError) {
+      console.error('Failed to respond after defer failure:', respondError);
+      // Can't do anything more - interaction is likely dead
+    }
+    return;
+  }
 
   try {
     // Fetch bot member explicitly if not in cache
@@ -51,9 +72,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         botMember = await guild.members.fetch(interaction.client.user.id);
       } catch (error) {
         console.error('Failed to fetch bot member:', error);
-        await interaction.editReply({
-          content: 'Unable to confirm bot permissions. Please try again.',
-        });
+        await respond('Unable to confirm bot permissions. Please try again.');
         return;
       }
     }
@@ -65,9 +84,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         PermissionFlagsBits.SendMessages,
       ])
     ) {
-      await interaction.editReply({
-        content: 'I need permission to view and send messages in that channel.',
-      });
+      await respond('I need permission to view and send messages in that channel.');
       return;
     }
 
@@ -86,21 +103,17 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         content: `This channel has been set up for weekly growth reports. The first report will be posted next Monday.`,
       });
 
-      await interaction.editReply({
-        content: `Weekly reports will be posted to ${channel}.`,
-      });
+      await respond(`Weekly reports will be posted to ${channel}.`);
     } catch (sendError) {
       console.error('Failed to send confirmation message:', sendError);
 
-      await interaction.editReply({
-        content: `Settings saved successfully. I couldn't send a confirmation message to ${channel}, but weekly reports are configured and will be posted there.`,
-      });
+      await respond(
+        `Settings saved successfully. I couldn't send a confirmation message to ${channel}, but weekly reports are configured and will be posted there.`
+      );
     }
   } catch (error) {
     console.error('Failed to setup report channel:', error);
 
-    await interaction.editReply({
-      content: 'Failed to set up report channel. Please try again.',
-    });
+    await respond('Failed to set up report channel. Please try again.');
   }
 }
