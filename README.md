@@ -121,6 +121,12 @@ pnpm dev
 
 > In production, the bot runs on [Railway](https://railway.app) and scheduled jobs (daily stats, weekly reports) run via GitHub Actions.
 
+## Documentation
+
+- [Design System](docs/design-system.md) - UI/UX design guidelines for Phase 2
+- [Project Plan](docs/plan.md) - Roadmap and development milestones
+- [Requirements](docs/requirements.md) - Detailed requirements and specifications
+
 ## License
 
 MIT
