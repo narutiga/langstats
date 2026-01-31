@@ -125,6 +125,7 @@ pnpm dev
 
 - [Design System](docs/design-system.md) - UI/UX design guidelines for Phase 2
 - [Project Plan](docs/plan.md) - Roadmap and development milestones
+- [Requirements](docs/requirements.md) - Detailed requirements and specifications
 
 ## License
 
