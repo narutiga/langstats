@@ -44,12 +44,28 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   await interaction.deferReply({ ephemeral: true });
 
   try {
-    // Send confirmation message first to verify bot has permission
-    await channel.send({
-      content: `This channel has been set up for weekly growth reports. The first report will be posted next Monday.`,
-    });
+    const botMember = guild.members.me;
+    if (!botMember) {
+      await interaction.editReply({
+        content: 'Unable to confirm bot permissions. Please try again.',
+      });
+      return;
+    }
 
-    // Only save to DB after successful send
+    const permissions = channel.permissionsFor(botMember);
+    if (
+      !permissions?.has([
+        PermissionFlagsBits.ViewChannel,
+        PermissionFlagsBits.SendMessages,
+      ])
+    ) {
+      await interaction.editReply({
+        content: 'I need permission to view and send messages in that channel.',
+      });
+      return;
+    }
+
+    // Save to DB before sending a public confirmation message
     await upsertGuild({
       id: guild.id,
       name: guild.name,
@@ -58,6 +74,10 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     await updateReportChannel(guild.id, channel.id);
 
+    await channel.send({
+      content: `This channel has been set up for weekly growth reports. The first report will be posted next Monday.`,
+    });
+
     await interaction.editReply({
       content: `Weekly reports will be posted to ${channel}.`,
     });
@@ -65,7 +85,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     console.error('Failed to setup report channel:', error);
 
     await interaction.editReply({
-      content: 'Failed to save settings. Please try again.',
+      content: 'Failed to set up report channel. Please try again.',
     });
   }
 }
