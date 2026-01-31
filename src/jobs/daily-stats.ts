@@ -15,10 +15,26 @@ async function runDailyStats(): Promise<void> {
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
   });
 
+  const loginTimeoutMs = 30_000;
+
   await new Promise<void>((resolve, reject) => {
-    client.once(Events.ClientReady, () => resolve());
-    client.once(Events.Error, reject);
-    client.login(config.discord.token);
+    const timeoutId = setTimeout(() => {
+      reject(new Error(`Discord login timed out after ${loginTimeoutMs}ms`));
+    }, loginTimeoutMs);
+
+    const handleReady = () => {
+      clearTimeout(timeoutId);
+      resolve();
+    };
+
+    const handleError = (error: Error) => {
+      clearTimeout(timeoutId);
+      reject(error);
+    };
+
+    client.once(Events.ClientReady, handleReady);
+    client.once(Events.Error, handleError);
+    client.login(config.discord.token).catch(handleError);
   });
 
   console.log(`Connected as ${client.user?.tag}`);
