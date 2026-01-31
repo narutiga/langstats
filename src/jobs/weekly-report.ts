@@ -1,7 +1,8 @@
-import { Client, GatewayIntentBits, Events, TextChannel, NewsChannel } from 'discord.js';
+import { Client, GatewayIntentBits, TextChannel, NewsChannel } from 'discord.js';
 import { config } from '../config.js';
 import { getGuild } from '../db/queries.js';
 import { generateWeeklyReportData, formatWeeklyReport } from '../services/report.js';
+import { loginWithTimeout } from '../utils/discord.js';
 
 async function runWeeklyReport(): Promise<void> {
   console.log('Starting weekly report generation...');
@@ -10,27 +11,7 @@ async function runWeeklyReport(): Promise<void> {
     intents: [GatewayIntentBits.Guilds],
   });
 
-  const loginTimeoutMs = 30_000;
-
-  await new Promise<void>((resolve, reject) => {
-    const timeoutId = setTimeout(() => {
-      reject(new Error(`Discord login timed out after ${loginTimeoutMs}ms`));
-    }, loginTimeoutMs);
-
-    const handleReady = () => {
-      clearTimeout(timeoutId);
-      resolve();
-    };
-
-    const handleError = (error: Error) => {
-      clearTimeout(timeoutId);
-      reject(error);
-    };
-
-    client.once(Events.ClientReady, handleReady);
-    client.once(Events.Error, handleError);
-    client.login(config.discord.token).catch(handleError);
-  });
+  await loginWithTimeout(client, config.discord.token);
 
   console.log(`Connected as ${client.user?.tag}`);
 

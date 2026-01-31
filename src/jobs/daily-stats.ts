@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Events } from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 import { config } from '../config.js';
 import {
   getAllGuilds,
@@ -7,6 +7,7 @@ import {
   insertRoleStats,
 } from '../db/queries.js';
 import { collectGuildStats } from '../services/stats.js';
+import { loginWithTimeout } from '../utils/discord.js';
 
 async function runDailyStats(): Promise<void> {
   console.log('Starting daily stats collection...');
@@ -15,27 +16,7 @@ async function runDailyStats(): Promise<void> {
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
   });
 
-  const loginTimeoutMs = 30_000;
-
-  await new Promise<void>((resolve, reject) => {
-    const timeoutId = setTimeout(() => {
-      reject(new Error(`Discord login timed out after ${loginTimeoutMs}ms`));
-    }, loginTimeoutMs);
-
-    const handleReady = () => {
-      clearTimeout(timeoutId);
-      resolve();
-    };
-
-    const handleError = (error: Error) => {
-      clearTimeout(timeoutId);
-      reject(error);
-    };
-
-    client.once(Events.ClientReady, handleReady);
-    client.once(Events.Error, handleError);
-    client.login(config.discord.token).catch(handleError);
-  });
+  await loginWithTimeout(client, config.discord.token);
 
   console.log(`Connected as ${client.user?.tag}`);
 
