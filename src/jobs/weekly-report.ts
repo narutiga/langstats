@@ -52,7 +52,7 @@ async function runWeeklyReport(): Promise<number> {
         }
 
         const report = formatWeeklyReport(reportData);
-        await channel.send(report);
+        await channel.send({ content: report, allowedMentions: { parse: [] } });
 
         console.log(`  Report sent to #${channel.name}`);
         successCount++;

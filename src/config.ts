@@ -15,6 +15,6 @@ export const config = {
   },
   turso: {
     url: requireEnv('TURSO_DATABASE_URL'),
-    authToken: process.env.TURSO_AUTH_TOKEN,
+    authToken: requireEnv('TURSO_AUTH_TOKEN'),
   },
 } as const;

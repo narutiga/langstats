@@ -9,11 +9,11 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const guild = interaction.guild;
   const respond = async (content: string): Promise<void> => {
     if (interaction.deferred || interaction.replied) {
-      await interaction.editReply({ content });
+      await interaction.editReply({ content, allowedMentions: { parse: [] } });
       return;
     }
 
-    await interaction.reply({ content, ephemeral: true });
+    await interaction.reply({ content, ephemeral: true, allowedMentions: { parse: [] } });
   };
 
   if (!guild) {
