@@ -20,6 +20,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     await interaction.reply({
       content: 'This command can only be used in a server.',
       ephemeral: true,
+      allowedMentions: { parse: [] },
     });
     return;
   }

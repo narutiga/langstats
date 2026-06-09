@@ -110,6 +110,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     const reply = {
       content: 'An error occurred while executing this command.',
       ephemeral: true,
+      allowedMentions: { parse: [] },
     };
 
     try {

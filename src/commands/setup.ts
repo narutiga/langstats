@@ -24,17 +24,18 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const channel = interaction.options.getChannel('channel', true);
   const respond = async (content: string): Promise<void> => {
     if (interaction.deferred || interaction.replied) {
-      await interaction.editReply({ content });
+      await interaction.editReply({ content, allowedMentions: { parse: [] } });
       return;
     }
 
-    await interaction.reply({ content, ephemeral: true });
+    await interaction.reply({ content, ephemeral: true, allowedMentions: { parse: [] } });
   };
 
   if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel)) {
     await interaction.reply({
       content: 'Please select a text channel or announcement channel.',
       ephemeral: true,
+      allowedMentions: { parse: [] },
     });
     return;
   }
@@ -44,6 +45,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     await interaction.reply({
       content: 'This command can only be used in a server.',
       ephemeral: true,
+      allowedMentions: { parse: [] },
     });
     return;
   }
@@ -101,6 +103,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     try {
       await channel.send({
         content: `This channel has been set up for weekly growth reports. The first report will be posted next Monday.`,
+        allowedMentions: { parse: [] },
       });
 
       await respond(`Weekly reports will be posted to ${channel}.`);
