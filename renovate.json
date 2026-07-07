@@ -1,27 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "timezone": "Asia/Tokyo",
-  "prConcurrentLimit": 0,
-  "platformAutomerge": false,
-  "extends": [
-    "config:best-practices",
-    "config:js-app",
-    ":automergeMinor",
-    ":automergeLinters",
-    ":automergeTesters",
-    ":automergeTypes"
-  ],
-  "vulnerabilityAlerts": {
-    "enabled": true,
-    "automerge": true,
-    "labels": ["security"],
-    "schedule": ["at any time"]
-  },
-  "packageRules": [
-    {
-      "description": "Disable automerge for 0.x versions (breaking changes possible in minor updates)",
-      "matchCurrentVersion": "/^0/",
-      "automerge": false
-    }
-  ]
+  "extends": ["github>narutiga/renovate-config"]
 }
